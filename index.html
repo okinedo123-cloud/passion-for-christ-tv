@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -176,7 +175,7 @@ background: linear-gradient(135deg, #3b146b, #7b2cbf);
 </section>
 
 
-    <section id="schedule"><h2>Weekly TV Schedule</h2><p>Explore our 24/7 Christian television programming.</p><p class="schedule-note">All times are Central Time (CT). Scheduled times are estimates based on playlist durations and midnight daily starts; actual broadcasts may vary. Select a day and broadcast cycle to view individual programs.</p>
+    <section id="schedule"><div id="schedule-live" hidden><h2>Weekly TV Schedule</h2><p class="schedule-note">Central Time (America/Chicago). Planned programming, not verified live playback. Daylight saving transition days may vary.</p><div class="cards"><div class="card"><strong>Scheduled Now Playing</strong><p id="now-program"></p></div><div class="card"><strong>Scheduled Up Next</strong><p id="next-program"></p></div></div><p id="schedule-status" class="schedule-note" role="status"></p><div id="dynamic-guide"></div></div><div id="schedule-fallback"><h2>Weekly TV Schedule</h2><p>Explore our 24/7 Christian television programming.</p><p class="schedule-note">All times are Central Time (CT). Scheduled times are estimates based on playlist durations and midnight daily starts; actual broadcasts may vary. Select a day and broadcast cycle to view individual programs.</p>
 <details class="schedule-day"><summary>Sunday — Holiness &amp; Righteousness</summary>
 <details class="schedule-cycle"><summary>12:00:00 AM – 8:18:08 AM</summary><div class="schedule-scroll"><table class="schedule-table"><thead><tr><th scope="col">Starts (CT)</th><th scope="col">Ends (CT)</th><th scope="col">Program</th></tr></thead><tbody>
 <tr><td>12:00:00 AM</td><td>12:04:17 AM</td><td>Make Us Holy</td></tr>
@@ -1485,7 +1484,7 @@ background: linear-gradient(135deg, #3b146b, #7b2cbf);
 <tr><td>11:59:54 PM</td><td>12:00:00 AM (next day)</td><td>Saved by Grace</td></tr>
 </tbody></table></div></details>
 </details>
-</section>
+</div></section>
 <section id="programs">
       <h2>Our Christian Programming</h2>
       <div class="cards">
@@ -1543,6 +1542,8 @@ background: linear-gradient(135deg, #3b146b, #7b2cbf);
 <div class="platform-card coming"><span class="platform-logo" style="--logo-bg:#a50034"><img src="https://cdn.simpleicons.org/lg/ffffff" alt="" loading="lazy"></span><h3>LG TV</h3><span class="platform-status">Coming Soon</span></div>
 <div class="platform-card coming"><span class="platform-logo" style="--logo-bg:#222222"><span style="color:#fff;font-size:16px;font-weight:800;letter-spacing:-.7px" aria-hidden="true">VIZIO</span></span><h3>VIZIO TV</h3><span class="platform-status">Coming Soon</span></div>
 <div class="platform-card coming"><span class="platform-logo" style="--logo-bg:#e74c3c"><span style="color:#fff;font-size:23px;font-weight:800;letter-spacing:1px">VIDAA</span></span><h3>VIDAA TV</h3><span class="platform-status">Coming Soon</span></div>
+<div class="platform-card coming"><span class="platform-logo" style="--logo-bg:#075caa"><svg viewBox="0 0 80 80" width="60" height="60" role="img" aria-label="Whale TV illustrative icon"><path fill="white" d="M8 43 Q12 23 37 27 Q51 27 58 39 Q65 39 73 29 Q76 48 60 53 Q47 68 25 59 Q10 55 8 43Z"/><circle cx="22" cy="40" r="2.5" fill="#075caa"/><path d="M36 22 Q29 13 25 19 M36 22 Q43 13 47 19" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span><h3>Whale TV</h3><span class="platform-status">Coming Soon</span></div>
+<div class="platform-card coming"><span class="platform-logo" style="--logo-bg:#ffffff;border:1px solid #ddd"><svg viewBox="0 0 44 44" width="42" height="42" role="img" aria-label="Microsoft logo"><path fill="#f25022" d="M0 0h21v21H0z"/><path fill="#7fba00" d="M23 0h21v21H23z"/><path fill="#00a4ef" d="M0 23h21v21H0z"/><path fill="#ffb900" d="M23 23h21v21H23z"/></svg></span><h3>Microsoft Store</h3><span class="platform-status">Coming Soon</span></div>
   </div>
 </section>
     
@@ -1565,5 +1566,21 @@ background: linear-gradient(135deg, #3b146b, #7b2cbf);
     <p>www.passionforchristtv.org</p>
     <p>&copy; 2026 Passion for Christ Ministries.</p>
   </footer>
+<script>
+(()=>{
+const url='https://docs.google.com/spreadsheets/d/e/2PACX-1vRvZDZfBFlHSonvKzrngf6Be4Xk98j_rlaBW69IITJXs5AKJZkHlLt_VceHsAvM_iEaAjCQBXtz-Kco/pub?output=csv';
+const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const themes=['Holiness & Righteousness','Rapture','Prayer & Fasting','Evangelism & Soul Winning','Sermons & Biblical Preaching','Bible Reading, Christian Movies & Children’s Programs','Praise & Worship'];
+const $=id=>document.getElementById(id); let guide=null;
+function parse(s){let rows=[],r=[],v='',q=false; s=s.replace(/^\uFEFF/,'');for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(q&&s[i+1]==='"'){v+='"';i++;}else q=!q;}else if(!q&&c===','){r.push(v);v='';}else if(!q&&(c==='\n'||c==='\r')){if(c==='\r'&&s[i+1]==='\n')i++;r.push(v);if(r.some(x=>x.trim()))rows.push(r);r=[];v='';}else v+=c;}if(q)throw Error('Invalid CSV');r.push(v);if(r.some(x=>x.trim()))rows.push(r);return rows;}
+function build(s){const rows=parse(s), h=rows.shift().map(x=>x.trim().toLowerCase());const keys=['day','order','program title','duration in seconds','start offset in seconds'].map(k=>h.indexOf(k));if(keys.some(k=>k<0))throw Error('Missing columns');const result={};for(const d of days){let a=rows.filter(r=>r[keys[0]]?.trim()===d).map(r=>({order:Number(r[keys[1]]),title:r[keys[2]],duration:Math.round(Number(r[keys[3]])*100)})).sort((a,b)=>a.order-b.order);if(!a.length||a.some((x,i)=>x.order!==i+1||!x.title?.trim()||!Number.isFinite(x.duration)||x.duration<=0))throw Error('Invalid playlist '+d);let t=0;const total=a.reduce((n,x)=>n+x.duration,0);if(total<10000)throw Error('Playlist too short');let cycles=[];while(t<8640000){let c=[];for(const x of a){if(t>=8640000)break;let end=Math.min(t+x.duration,8640000);c.push({title:x.title,start:t,end});t=end;}cycles.push(c);}result[d]=cycles;}return result;}
+function time(n){if(n===8640000)return '12:00:00 AM (next day)';let s=Math.min(86399,Math.round(n/100)),h=Math.floor(s/3600);return `${h%12||12}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')} ${h<12?'AM':'PM'}`;}
+function el(tag,txt,cls){let e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e;}
+function render(){let root=$('dynamic-guide'),frag=document.createDocumentFragment();days.forEach((d,i)=>{let day=el('details',undefined,'schedule-day');day.append(el('summary',d+' — '+themes[i]));guide[d].forEach(c=>{let detail=el('details',undefined,'schedule-cycle');detail.append(el('summary',time(c[0].start)+' – '+time(c.at(-1).end)));let wrap=el('div',undefined,'schedule-scroll'),table=el('table',undefined,'schedule-table'),head=el('thead'),hr=el('tr');['Starts (CT)','Ends (CT)','Program'].forEach(v=>hr.append(el('th',v)));head.append(hr);table.append(head);let body=el('tbody');c.forEach(x=>{let tr=el('tr');[time(x.start),time(x.end),x.title].forEach(v=>tr.append(el('td',v)));body.append(tr);});table.append(body);wrap.append(table);detail.append(wrap);day.append(detail);});frag.append(day);});root.replaceChildren(frag);}
+function tick(){if(!guide)return;let parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',weekday:'long',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(p=>[p.type,p.value]));let t=(+parts.hour*3600+ +parts.minute*60+ +parts.second)*100, a=guide[parts.weekday].flat(),i=a.findIndex(x=>x.start<=t&&t<x.end);if(i<0)return;let next=a[i+1]||guide[days[(days.indexOf(parts.weekday)+1)%7]][0][0];$('now-program').textContent=a[i].title+' · '+time(a[i].start);$('next-program').textContent=next.title+' · '+time(next.start);}
+let previous='';async function refresh(){try{let r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);let s=await r.text();if(s!==previous){guide=build(s);render();previous=s;} $('schedule-live').hidden=false;$('schedule-fallback').hidden=true;$('schedule-status').textContent='Schedule refreshed from Google Sheets.';tick();}catch(e){if(guide){$('schedule-status').textContent='Refresh unavailable; showing last loaded schedule.';}else{let f=$('schedule-fallback');if(!document.getElementById('fallback-notice')){let n=el('p','Live schedule feed unavailable; showing saved programming schedule.','schedule-note');n.id='fallback-notice';f.prepend(n);}}console.warn(e);}}
+refresh();setInterval(refresh,300000);setInterval(tick,1000);
+})();
+</script>
 </body>
 </html>
